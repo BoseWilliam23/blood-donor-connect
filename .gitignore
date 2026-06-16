@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Output directories
+frontend/dist/
+dist/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+frontend/.env.local
+
+# Databases & Caches
+*.db
+__pycache__/
+
+# Legacy Mockups & Screenshots
+admin_dashboard_blood_donor_connect/
+donor_dashboard_blood_donor_connect/
+landing_page_blood_donor_connect/
+post_emergency_request_blood_donor_connect/
+register_as_a_donor_blood_donor_connect/
+search_donors_blood_donor_connect/
+templates/
+vitallink_narrative/
+app.py
+init_db.py
+test_backend.py
+requirements.txt
