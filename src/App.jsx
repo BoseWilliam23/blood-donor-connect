@@ -358,7 +358,7 @@ export default function App() {
             </ul>
           </div>
           <div className="space-y-4">
-            <h4 class="font-title-md text-on-surface">Support</h4>
+            <h4 className="font-title-md text-on-surface">Support</h4>
             <ul className="space-y-2 text-label-sm text-on-surface-variant">
               <li><a className="hover:text-primary" href="#">Contact Support</a></li>
               <li><a className="hover:text-primary" href="#">Privacy Policy</a></li>
@@ -396,7 +396,7 @@ export default function App() {
                 </div>
               </div>
               <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary">mail</span>
+                <span className="material-symbols-outlined text-primary">mail</span>
                 <div>
                   <p className="text-xs text-on-surface-variant">Email Address</p>
                   <p className="text-body-md font-bold">{contactModal.email}</p>
@@ -507,7 +507,7 @@ function LandingView({ setView }) {
               <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Total Donors</p>
             </div>
             <div className="p-base border-y md:border-y-0 md:border-x border-outline-variant">
-              <h2 class="font-display-lg text-primary mb-2">1,500+</h2>
+              <h2 className="font-display-lg text-primary mb-2">1,500+</h2>
               <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Successful Donations</p>
             </div>
             <div className="p-base">
