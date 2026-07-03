@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 export default function App() {
   const [view, setView] = useState('landing');
@@ -25,6 +25,7 @@ export default function App() {
   
   // Logged-in auth restore
   useEffect(() => {
+    if (!isSupabaseConfigured) return;
     // Get current active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -73,6 +74,7 @@ export default function App() {
   // Update dynamic values when view changes
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
+    if (!isSupabaseConfigured) return;
     if (view === 'search') {
       fetchDonors();
     } else if (view === 'emergency') {
@@ -86,6 +88,33 @@ export default function App() {
     }
   }, [view, token, user]);
   /* eslint-enable react-hooks/exhaustive-deps */
+
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-[24px] shadow-2xl p-8 border border-[#e4beb9] text-center">
+          <div className="w-16 h-16 bg-[#ba1a1a]/10 text-[#ba1a1a] rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-4xl">warning</span>
+          </div>
+          <h1 className="text-2xl text-[#1b1c1c] mb-2 font-bold">Configuration Required</h1>
+          <p className="text-sm text-[#5b403d] mb-6">
+            To run <strong>Blood Connect</strong>, you need to configure your Supabase connection credentials.
+          </p>
+          <div className="bg-[#f0eded] rounded-xl p-4 text-left mb-6 space-y-2 text-sm border border-[#e4beb9]">
+            <p className="font-bold text-[#1b1c1c]">Deploying on Vercel?</p>
+            <ol className="list-decimal pl-4 space-y-1 text-[#5b403d]">
+              <li>Go to your Vercel Project Settings.</li>
+              <li>Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> as Environment Variables.</li>
+              <li>Trigger a new deployment (Redeploy).</li>
+            </ol>
+          </div>
+          <p className="text-xs text-[#5b5c5c]">
+            See the README.md file for instructions on setting up local environment variables.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
