@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
 export default function App() {
@@ -47,7 +47,7 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserProfile = async (userId) => {
+  async function fetchUserProfile(userId) {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -68,9 +68,10 @@ export default function App() {
     } catch (err) {
       console.error("Error loading user profile:", err.message);
     }
-  };
+  }
 
   // Update dynamic values when view changes
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (view === 'search') {
       fetchDonors();
@@ -84,11 +85,7 @@ export default function App() {
       fetchDonorDashboardData();
     }
   }, [view, token, user]);
-
-  const handleLogin = (userObj, tokenStr) => {
-    setToken(tokenStr);
-    setUser(userObj);
-  };
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -99,7 +96,7 @@ export default function App() {
 
   // --- API Handlers ---
 
-  const fetchDonors = async () => {
+  async function fetchDonors() {
     try {
       let query = supabase.from('profiles').select('*').eq('role', 'donor');
       if (searchAvailable) {
@@ -117,9 +114,9 @@ export default function App() {
     } catch (err) {
       console.error("Error search donors:", err.message);
     }
-  };
+  }
 
-  const fetchLiveBroadcasts = async () => {
+  async function fetchLiveBroadcasts() {
     try {
       const { data, error } = await supabase
         .from('emergency_requests_view')
@@ -130,9 +127,9 @@ export default function App() {
     } catch (err) {
       console.error("Error fetching broadcasts:", err.message);
     }
-  };
+  }
 
-  const fetchAdminStats = async () => {
+  async function fetchAdminStats() {
     try {
       const { count: totalDonors, error: e1 } = await supabase
         .from('profiles')
@@ -161,9 +158,9 @@ export default function App() {
     } catch (err) {
       console.error("Error fetching stats:", err.message);
     }
-  };
+  }
 
-  const fetchAdminDonors = async () => {
+  async function fetchAdminDonors() {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -174,9 +171,9 @@ export default function App() {
     } catch (err) {
       console.error("Error fetching donors:", err.message);
     }
-  };
+  }
 
-  const fetchDonorDashboardData = async () => {
+  async function fetchDonorDashboardData() {
     if (!user) return;
     try {
       const historyRes = await supabase
@@ -200,7 +197,7 @@ export default function App() {
     } catch (err) {
       console.error("Error fetching dashboard data:", err.message);
     }
-  };
+  }
 
   const toggleAvailability = async () => {
     if (!user) return;
@@ -312,7 +309,7 @@ export default function App() {
             fetchLiveBroadcasts={fetchLiveBroadcasts}
           />
         )}
-        {view === 'login' && <LoginView handleLogin={handleLogin} />}
+        {view === 'login' && <LoginView />}
         
         {view === 'donor-dashboard' && (
           <DonorDashboardView
@@ -634,8 +631,14 @@ function SearchView({
             ) : (
               searchResults.map(d => {
                 const avatar = d.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80';
-                // Create random but stable contact info for display matching the DB records
-                const phone = d.phone || `+91 98401 ${Math.floor(10000 + Math.random() * 89999)}`;
+                // Create deterministic stable contact info for display matching the DB records
+                let hash = 0;
+                const seedStr = d.id || d.name || '';
+                for (let i = 0; i < seedStr.length; i++) {
+                  hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const seedVal = Math.abs(hash % 90000) + 10000;
+                const phone = d.phone || `+91 98401 ${seedVal}`;
                 const email = `${d.name.toLowerCase().replace(' ', '.')}@example.com`;
                 
                 return (
@@ -712,8 +715,6 @@ function RegisterView({ setView }) {
   
   const [smsAlerts, setSmsAlerts] = useState(true);
   const [newsletter, setNewsletter] = useState(false);
-  const [reminder, setReminder] = useState(false);
-  const [stories, setStories] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -739,7 +740,7 @@ function RegisterView({ setView }) {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: email.trim(),
         password: password,
         options: {
@@ -921,7 +922,7 @@ function EmergencyView({ broadcasts, fetchLiveBroadcasts }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('emergency_requests')
         .insert([{
           patient_name: name,
@@ -1048,7 +1049,7 @@ function EmergencyView({ broadcasts, fetchLiveBroadcasts }) {
   );
 }
 
-function LoginView({ handleLogin }) {
+function LoginView() {
   const [role, setRole] = useState('donor');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -1060,7 +1061,7 @@ function LoginView({ handleLogin }) {
     setLoading(true);
     setError('');
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password
       });
